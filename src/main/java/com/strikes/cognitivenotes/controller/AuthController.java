@@ -1,62 +1,68 @@
 package com.strikes.cognitivenotes.controller;
 
 import com.strikes.cognitivenotes.model.User;
-import com.strikes.cognitivenotes.repository.UserRepository;
 import com.strikes.cognitivenotes.security.JwtUtil;
+import com.strikes.cognitivenotes.service.UserService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
+    private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                          AuthenticationManager authenticationManager, UserDetailsService userDetailsService,
-                          JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public AuthController(AuthenticationManager authenticationManager, UserService userService, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
-    // 1. Register API (Pehle se hogi toh verify kar lein)
+    // Register Endpoint
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Error: Username is already taken!");
-        }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return ResponseEntity.status(201).body("User registered successfully!");
+    public ResponseEntity<?> registerUser(@Valid   @RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        String password = request.get("password");
+        String rePassword = request.get("rePassword");
+
+        User registeredUser = userService.registerUser(username, password, rePassword);
+        return ResponseEntity.ok(Map.of("message", "User registered successfully!", "username", registeredUser.getUsername()));
     }
 
-    // 2. Login API jo JWT Token generate karegi
+    // Login Endpoint
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody User authenticationRequest) throws Exception {
-        try {
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("Invalid username or password");
+    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        String password = request.get("password");
+
+        // Spring Security ke zariye authentication check karna
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+
+        if (authentication.isAuthenticated()) {
+            // Authentication se UserDetails nikal kar JwtUtil ko dein
+            org.springframework.security.core.userdetails.UserDetails userDetails = 
+                (org.springframework.security.core.userdetails.UserDetails) authentication.getPrincipal();
+            
+            String token = jwtUtil.generateToken(userDetails);
+            return ResponseEntity.ok(Map.of("token", token));
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        final String jwt = jwtUtil.generateToken(userDetails);
-
-        // Token ko JSON format me return karenge
-        return ResponseEntity.ok().body("{\"token\": \"" + jwt + "\"}");
+        // Compiler ko satisfy karne ke liye yeh line jodein
+        throw new RuntimeException("Invalid username or password");
+    
     }
 }

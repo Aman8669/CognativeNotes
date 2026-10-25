@@ -11,6 +11,8 @@ public class Note {
     private Long id;
 
     private String title;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     // Naya field: Har note ek specific user ka hoga

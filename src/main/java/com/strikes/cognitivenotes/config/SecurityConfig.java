@@ -31,6 +31,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> {}) // <-- Yeh zaroori line jod di gayi hai taaki CorsConfig active rahe!
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll() // Register aur Login public rahenge
                 .anyRequest().authenticated()                // Baaki sabhi endpoints ke liye JWT token chahiye

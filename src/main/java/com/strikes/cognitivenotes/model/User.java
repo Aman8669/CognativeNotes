@@ -16,6 +16,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+
     // Default Constructor
     public User() {}
 
@@ -43,4 +44,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    
 }
