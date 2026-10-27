@@ -1,3 +1,4 @@
+
 package com.strikes.cognitivenotes.config;
 
 import org.springframework.context.annotation.Bean;
@@ -14,8 +15,19 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173") // Vite / React ka default port
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedOrigins(
+                                "http://localhost:5173",
+                                "https://cognative-notes-frontend-five.vercel.app",
+                                "https://cognative-notes-frontend-oo2iyhw1r-aman09.vercel.app"
+                        )
+                        .allowedMethods(
+                                "GET",
+                                "POST",
+                                "PUT",
+                                "PATCH",
+                                "DELETE",
+                                "OPTIONS"
+                        )
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }
