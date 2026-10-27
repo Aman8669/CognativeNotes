@@ -33,7 +33,5 @@ build/
 .vscode/
 
 ### Spring Boot ###
-src/main/resources/application.properties
-
-# Keep local database credentials private
-/src/main/resources/application.properties
+# application.properties is tracked for deployment configuration
+.env
