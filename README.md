@@ -1,48 +1,117 @@
-# CognitiveNotes 🧠
+# 🧠 CognitiveNotes — Secure Smart Notes Platform
 
-**A Secure Note-Taking and Intelligent Analysis Application**
+A full-stack note management application built with **Java, Spring Boot, React, and PostgreSQL**, featuring JWT-based authentication, user-level data isolation, and a foundation for AI-powered content analysis.
 
-CognitiveNotes is a Spring Boot backend application designed to help users securely create, manage, and organize their personal notes. It implements JWT-based authentication and authorization, user-specific data access, centralized exception handling, and PostgreSQL database integration.
+🌐 **Live Demo:** [Open CognitiveNotes](https://cognative-notes-frontend-oo2iyhw1r-aman09.vercel.app/)  
+💻 **Backend Repository:** [GitHub – CognativeNotes](https://github.com/Aman8669/CognativeNotes)
 
-The project is also being extended with AI-powered analysis to help users quickly understand documents, source code, and other notes.
+## 📌 Overview
 
-## 🚀 Key Features
+CognitiveNotes is a web application designed to help users create, manage, and organize personal notes securely.
 
-- **JWT Authentication:** Secure user authentication using JSON Web Tokens.
-- **Authorization and Data Isolation:** Users can access only their own notes. One user cannot retrieve another user's private notes.
-- **Note Management:** Backend functionality for managing user notes through REST APIs.
-- **PostgreSQL Integration:** Persistent storage for user accounts and notes.
-- **Global Exception Handling:** Centralized handling of application exceptions with structured error responses.
-- **User Registration:** Dedicated registration DTO and authentication controller.
-- **AI-Powered Analysis (Planned):** Intelligent analysis and summarization of documents, source code, and notes.
+The project focuses on backend security, REST API development, database integration, and full-stack deployment. Each authenticated user can access their own notes without accessing another user's private data.
+
+The application uses a separate React frontend and Spring Boot backend, with PostgreSQL for persistent storage.
+
+## ✨ Key Features
+
+- **JWT Authentication:** Token-based authentication for user login and protected API access.
+- **Authorization:** Secures protected resources for authenticated users.
+- **User-Specific Data Isolation:** Users can access their own notes without accessing another user's notes.
+- **Note Management:** Create, retrieve, update, and delete personal notes through REST APIs.
+- **PostgreSQL Integration:** Stores user and note data in a relational database.
+- **Global Exception Handling:** Centralizes application error handling and provides structured error responses.
+- **RESTful API Architecture:** Separates request handling, business logic, and database operations.
+- **Cloud Deployment:** Frontend hosted on Vercel, backend on Render, and PostgreSQL hosted on Neon.
+- **AI-Powered Analysis:** Planned extension for analyzing and summarizing notes, documents, and source code. Mark this feature as completed once it is implemented and tested.
 
 ## 🛠️ Tech Stack
 
-| Technology                  | Purpose                                    |
-| --------------------------- | ------------------------------------------ |
-| Java                        | Backend programming language               |
-| Spring Boot                 | Backend application framework              |
-| Spring Security             | Authentication and authorization           |
-| JWT                         | Token-based authentication                 |
-| Spring Data JPA / Hibernate | Database access and ORM                    |
-| PostgreSQL                  | Relational database                        |
-| Maven                       | Dependency management and build automation |
-| REST APIs                   | Communication between clients and backend  |
+| Technology | Purpose |
+|---|---|
+| Java 21 | Backend development |
+| Spring Boot | Backend application framework |
+| Spring Security | Authentication and authorization |
+| JWT | Token-based authentication |
+| Spring Data JPA | Database access |
+| Hibernate | Object-relational mapping |
+| PostgreSQL | Relational database |
+| Maven | Build automation and dependency management |
+| React | Frontend development |
+| Vite | Frontend development server and build tool |
+| Axios | HTTP communication with backend APIs |
+| Git & GitHub | Version control |
+| Render | Backend deployment |
+| Vercel | Frontend deployment |
+| Neon | Cloud PostgreSQL database |
 
-## 🔐 Security and Data Privacy
+## 🏗️ Architecture
 
-A key feature of CognitiveNotes is its user-level data isolation.
+```text
+                 User / Browser
+                       |
+                       v
+              React + Vite Frontend
+                    (Vercel)
+                       |
+                 HTTP / REST API
+                       |
+                       v
+              Spring Boot Backend
+                    (Render)
+                       |
+          +------------+------------+
+          |            |            |
+          v            v            v
+     Controllers    Services    Security
+          |                         |
+          v                         v
+      Repositories            JWT Validation
+          |
+          v
+      PostgreSQL
+         (Neon)
+```
 
-For example:
+### Backend Architecture
 
-- User 1 logs in and creates personal notes.
-- User 1 can retrieve their own notes using authenticated requests.
-- User 2 logs in with a different account and can retrieve only their own notes.
-- User 2 cannot access User 1's notes through unauthorized API requests.
+The backend follows a layered architecture to keep responsibilities organized:
 
-JWT authentication identifies the authenticated user, while authorization and user-specific data access enforce ownership restrictions.
+- **Controller Layer:** Handles incoming HTTP requests and API responses.
+- **Service Layer:** Implements application business logic.
+- **Repository Layer:** Performs database operations using Spring Data JPA.
+- **Model Layer:** Represents entities such as users and notes.
+- **Security Layer:** Handles JWT processing and authenticated user identification.
+- **DTO Layer:** Transfers structured request and response data.
+- **Exception Layer:** Centralizes exception handling.
 
-## 🏗️ Project Structure
+## 🔐 Security and Data Isolation
+
+One of the core design goals of CognitiveNotes is protecting users' private notes.
+
+The authentication and authorization flow works as follows:
+
+1. A user registers and logs in with their credentials.
+2. The backend authenticates the user and returns a JWT.
+3. The frontend stores the token and sends it with protected API requests.
+4. Spring Security and the JWT filter process authenticated requests.
+5. The backend identifies the logged-in user and restricts note access to that user's data.
+
+**Example:** If User A creates a note, User B must not be able to retrieve or modify that note through their own authenticated account.
+
+This demonstrates practical implementation of authentication, authorization, and user-level data isolation.
+
+## 🚀 Live Deployment
+
+| Component | Platform |
+|---|---|
+| Frontend | [Vercel](https://cognative-notes-frontend-oo2iyhw1r-aman09.vercel.app/) |
+| Backend | [Render](https://cognativenotes.onrender.com) |
+| Database | [Neon PostgreSQL](https://neon.tech/) |
+
+The frontend communicates with the deployed Spring Boot backend through REST APIs. The backend connects to the cloud PostgreSQL database for persistent data storage.
+
+## 📂 Backend Project Structure
 
 ```text
 src/main/java/com/strikes/cognitivenotes/
@@ -66,125 +135,126 @@ src/main/java/com/strikes/cognitivenotes/
 │   ├── JwtFilter.java
 │   └── JwtUtil.java
 └── service/
-   ├── NoteService.java
+    ├── NoteService.java
     └── UserService.java
 ```
 
-### Architecture Overview
-
-- **Controller Layer:** Handles incoming HTTP requests and API responses.
-- **Service Layer:** Contains application business logic.
-- **Repository Layer:** Manages database operations.
-- **Model Layer:** Represents users and notes.
-- **Security Layer:** Supports JWT processing and authenticated user identification.
-- **DTO Layer:** Transfers structured request and error-response data.
-- **Exception Layer:** Centralizes exception handling.
-
-## ⚙️ Getting Started
+## ⚙️ Run Locally
 
 ### Prerequisites
 
-Install the following before running the application:
-
-- Java Development Kit (JDK)
-- Maven or the included Maven Wrapper
+- JDK 21
 - PostgreSQL
-- An IDE such as IntelliJ IDEA or VS Code
+- Git
+- Maven or the included Maven Wrapper
+- Node.js and npm for the separate frontend project
 
-### 1. Clone the Repository
+### 1. Clone the Backend Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/CognitiveNotes.git
-cd CognitiveNotes
+git clone https://github.com/Aman8669/CognativeNotes.git
+cd CognativeNotes
 ```
 
-Replace `YOUR_USERNAME` with your GitHub username.
+### 2. Create the Database
 
-### 2. Create the PostgreSQL Database
-
-Open PostgreSQL or pgAdmin and execute:
+Create a PostgreSQL database:
 
 ```sql
 CREATE DATABASE cognativenotes_db;
 ```
 
-### 3. Configure Application Properties
+### 3. Configure Environment Variables
 
-Create `src/main/resources/application.properties` locally and configure your database credentials:
+Create `src/main/resources/application.properties` locally and configure your database connection.
+
+Example configuration:
 
 ```properties
 spring.application.name=cognitivenotes
 
-spring.datasource.url=jdbc:postgresql://localhost:5432/cognativenotes_db
+spring.datasource.url=${DB_URL}
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
 
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-Set `DB_USERNAME` and `DB_PASSWORD` in your local environment. Configure any additional JWT-related properties required by your implementation.
+Configure `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD` in your local environment. Add any additional JWT, security, or AI-provider settings required by your implementation.
 
-**Security note:** Keep `application.properties`, database credentials, and JWT secrets out of version control. Do not commit real passwords or signing keys.
+Never commit database passwords, JWT signing secrets, or API keys to GitHub.
 
-### 4. Run the Application
+### 4. Start the Backend
 
-Using the Maven Wrapper on Windows:
+On Windows:
 
-```bash
-mvnw.cmd spring-boot:run
+```powershell
+.\mvnw.cmd spring-boot:run
 ```
 
-Alternatively, if Maven is installed and configured in your system PATH:
+On macOS or Linux:
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
-The application will start on the port configured for your Spring Boot application, typically `8080` unless changed.
+The application typically starts at `http://localhost:8080`, unless configured otherwise.
 
-## 🧪 Testing the Application
+### 5. Start the Frontend
 
-Use Postman or another REST API client to test the following workflows:
+Clone or open the separate React frontend repository and configure its API base URL for the local backend.
 
-1. Register a new user.
-2. Authenticate with the user's credentials.
-3. Obtain and use the JWT token for protected requests.
-4. Create notes while authenticated.
-5. Retrieve notes belonging to the authenticated user.
-6. Test that a different user cannot access another user's notes.
-7. Test invalid requests and exception responses.
+Install dependencies and start the development server:
 
-The exact endpoints and request formats depend on the controller implementation.
+```bash
+npm install
+npm run dev
+```
 
-## 🗺️ Roadmap
+The Vite development server typically runs at `http://localhost:5173`.
 
-- [x] Spring Boot backend setup
-- [x] User registration and authentication workflow
-- [x] JWT-based security components
-- [x] User-specific note access
-- [x] PostgreSQL integration
-- [x] Centralized exception handling
-- [ ] AI-powered document analysis
-- [ ] AI-powered source code analysis
-- [ ] AI-powered note summarization
-- [ ] Automated unit and integration tests
-- [ ] API documentation with Swagger / OpenAPI
-- [ ] Cloud deployment
+## 🧪 Testing Checklist
 
-## 🎯 Project Objective
+The following workflows can be tested using the frontend or an API client such as Postman:
 
-The goal of CognitiveNotes is to combine secure note management with intelligent information analysis. The project provides practical experience in backend development, REST API design, authentication, authorization, relational database management, and exception handling, with AI capabilities planned as the next development milestone.
+- Register a new user and log in.
+- Verify that successful login returns a JWT.
+- Access protected endpoints with a valid token.
+- Create, retrieve, update, and delete notes.
+- Verify that users cannot access another user's private notes.
+- Test invalid credentials and unauthorized requests.
+- Verify appropriate error responses for invalid requests.
+- Test the deployed frontend-to-backend connection.
+
+## 🎯 What I Learned
+
+- Building REST APIs using Java and Spring Boot.
+- Implementing JWT-based authentication and authorization.
+- Understanding Spring Security and request filtering.
+- Designing a layered backend architecture.
+- Integrating PostgreSQL with Spring Data JPA and Hibernate.
+- Implementing centralized exception handling.
+- Managing cross-origin requests between a separate frontend and backend.
+- Configuring environment variables and deploying a full-stack application.
+- Connecting a cloud-hosted backend to a managed PostgreSQL database.
+
+## 🔮 Future Enhancements
+
+- AI-powered summarization and analysis of notes, documents, and source code.
+- Automated unit and integration testing.
+- API documentation using Swagger/OpenAPI.
+- CI/CD automation with GitHub Actions.
+- Improved frontend validation, loading states, and error messages.
 
 ## 👨‍💻 Developer
 
-**Aman Naikwade**
-
-Aspiring Java Backend Developer
+**Aman Nasir Naikwade**  
+Aspiring Java Full Stack Developer
 
 - GitHub: [Aman8669](https://github.com/Aman8669)
+- Project Repository: [CognativeNotes](https://github.com/Aman8669/CognativeNotes)
+- Live Application: [CognitiveNotes](https://cognative-notes-frontend-oo2iyhw1r-aman09.vercel.app/)
 
 ---
 
-*Built with Java, Spring Boot, PostgreSQL, and a focus on secure backend development.*
+*Built to demonstrate practical skills in Java backend development, application security, database integration, and full-stack deployment.*
